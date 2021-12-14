@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  title: TextIndexer-v1
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /indexer/v1/document:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '':
+                    type: array
+                    items:
+                      type: string
+      operationId: get-indexer-v1-document
+    post:
+      summary: ''
+      operationId: post-indexer-v1-document
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: filename
+        - schema:
+            type: string
+          in: query
+          name: encoding
+        - schema:
+            type: string
+          in: query
+          name: language
+  '/indexer/v1/document/{doc_id}':
+    parameters:
+      - schema:
+          type: string
+        name: doc_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      operationId: get-indexer-v1-document-doc_id
+      parameters: []
+  '/indexer/v1/document/{doc_id}/raw':
+    parameters:
+      - schema:
+          type: string
+        name: doc_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      operationId: get-indexer-v1-document-doc_id
+      parameters: []
+  /indexer/v1/words:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  word:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Word'
+      operationId: get-indexer-v1-words
+      description: ''
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: skip
+        - schema:
+            type: integer
+          in: query
+          name: limit
+        - schema:
+            type: boolean
+          in: query
+          name: reverse
+components:
+  schemas:
+    Word:
+      title: Words
+      type: object
+      properties:
+        id:
+          type: string
+        word:
+          type: string
+        encoding:
+          type: string
+        language:
+          type: string
+        references:
+          type: array
+          items:
+            type: object
+            properties:
+              document:
+                type: string
+              paragraph:
+                type: integer
+              start:
+                type: integer
+              end:
+                type: integer
+              sentence:
+                type: integer
+              word:
+                type: integer
+    Document:
+      title: Document
+      type: object
+      properties:
+        id:
+          type: string
+        paragraphs:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              sentences:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    index:
+                      type: string
+                    text:
+                      type: string
+                    tokens:
+                      type: array
+                      items:
+                        type: string

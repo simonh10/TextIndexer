@@ -1,0 +1,393 @@
+openapi: 3.0.1
+info:
+  title: TextIndexer-v1
+  version: "1.0"
+servers:
+- url: http://localhost:3000
+paths:
+  /indexer/v1/document:
+    get:
+      operationId: get_indexer_v1_document
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    docs:
+                    - string+v1
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: OK
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+    post:
+      operationId: post_indexer_v1_document
+      parameters:
+      - explode: true
+        in: query
+        name: filename
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: encoding
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: language
+        required: false
+        schema:
+          type: string
+        style: form
+      requestBody:
+        content:
+          text/plain:
+            examples:
+              example-1:
+                value: string
+            schema:
+              type: string
+      responses:
+        "204":
+          description: No Content
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+  /indexer/v1/document/{doc_id}:
+    get:
+      operationId: get_indexer_v1_document_doc_id
+      parameters:
+      - explode: false
+        in: path
+        name: doc_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    id: string
+                    paragraphs:
+                    - index: 0
+                      sentences:
+                      - index: string
+                        text: string
+                        tokens:
+                        - string
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: OK
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+  /indexer/v1/document/{doc_id}/raw:
+    get:
+      operationId: get_indexer_v1_document_doc_id_raw
+      parameters:
+      - explode: false
+        in: path
+        name: doc_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    id: string
+                    paragraphs:
+                    - index: 0
+                      sentences:
+                      - index: string
+                        text: string
+                        tokens:
+                        - string
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: OK
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+  /indexer/v1/words:
+    get:
+      operationId: get_indexer_v1_words
+      parameters:
+      - explode: true
+        in: query
+        name: skip
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: reverse
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    count: 0
+                    word:
+                    - id: string
+                      word: string
+                      encoding: string
+                      language: string
+                      references:
+                      - document: string
+                        paragraph: 0
+                        start: 0
+                        end: 0
+                        sentence: 0
+                        word: 0
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+          description: OK
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+components:
+  schemas:
+    Word:
+      example:
+        references:
+        - sentence: 5
+          paragraph: 6
+          document: document
+          start: 1
+          end: 5
+          word: 2
+        - sentence: 5
+          paragraph: 6
+          document: document
+          start: 1
+          end: 5
+          word: 2
+        language: language
+        id: id
+        encoding: encoding
+        word: word
+      properties:
+        id:
+          title: id
+          type: string
+        word:
+          title: word
+          type: string
+        encoding:
+          title: encoding
+          type: string
+        language:
+          title: language
+          type: string
+        references:
+          items:
+            $ref: '#/components/schemas/Word_references'
+          title: references
+          type: array
+      title: Words
+      type: object
+    Document:
+      example:
+        id: id
+        paragraphs:
+        - sentences:
+          - index: index
+            tokens:
+            - tokens
+            - tokens
+            text: text
+          - index: index
+            tokens:
+            - tokens
+            - tokens
+            text: text
+          index: 0
+        - sentences:
+          - index: index
+            tokens:
+            - tokens
+            - tokens
+            text: text
+          - index: index
+            tokens:
+            - tokens
+            - tokens
+            text: text
+          index: 0
+      properties:
+        id:
+          title: id
+          type: string
+        paragraphs:
+          items:
+            $ref: '#/components/schemas/Document_paragraphs'
+          title: paragraphs
+          type: array
+      title: Document
+      type: object
+    inline_response_200:
+      example:
+        docs:
+        - docs
+        - docs
+      properties:
+        docs:
+          items:
+            type: string
+          title: docs
+          type: array
+      title: inline_response_200
+      type: object
+    inline_response_200_1:
+      example:
+        count: 0
+        word:
+        - references:
+          - sentence: 5
+            paragraph: 6
+            document: document
+            start: 1
+            end: 5
+            word: 2
+          - sentence: 5
+            paragraph: 6
+            document: document
+            start: 1
+            end: 5
+            word: 2
+          language: language
+          id: id
+          encoding: encoding
+          word: word
+        - references:
+          - sentence: 5
+            paragraph: 6
+            document: document
+            start: 1
+            end: 5
+            word: 2
+          - sentence: 5
+            paragraph: 6
+            document: document
+            start: 1
+            end: 5
+            word: 2
+          language: language
+          id: id
+          encoding: encoding
+          word: word
+      properties:
+        count:
+          title: count
+          type: integer
+        word:
+          items:
+            $ref: '#/components/schemas/Word'
+          title: word
+          type: array
+      title: inline_response_200_1
+      type: object
+    Word_references:
+      example:
+        sentence: 5
+        paragraph: 6
+        document: document
+        start: 1
+        end: 5
+        word: 2
+      properties:
+        document:
+          title: document
+          type: string
+        paragraph:
+          title: paragraph
+          type: integer
+        start:
+          title: start
+          type: integer
+        end:
+          title: end
+          type: integer
+        sentence:
+          title: sentence
+          type: integer
+        word:
+          title: word
+          type: integer
+      title: Word_references
+      type: object
+    Document_sentences:
+      example:
+        index: index
+        tokens:
+        - tokens
+        - tokens
+        text: text
+      properties:
+        index:
+          title: index
+          type: string
+        text:
+          title: text
+          type: string
+        tokens:
+          items:
+            type: string
+          title: tokens
+          type: array
+      title: Document_sentences
+      type: object
+    Document_paragraphs:
+      example:
+        sentences:
+        - index: index
+          tokens:
+          - tokens
+          - tokens
+          text: text
+        - index: index
+          tokens:
+          - tokens
+          - tokens
+          text: text
+        index: 0
+      properties:
+        index:
+          title: index
+          type: integer
+        sentences:
+          items:
+            $ref: '#/components/schemas/Document_sentences'
+          title: sentences
+          type: array
+      title: Document_paragraphs
+      type: object

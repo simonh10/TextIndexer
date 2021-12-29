@@ -1,0 +1,3 @@
+FROM stoplight/prism
+COPY . /app
+ENTRYPOINT [ "node", "dist/index.js", "mock", "-h", "0.0.0.0", "/app/reference/TextIndexer-v1.yaml" ]

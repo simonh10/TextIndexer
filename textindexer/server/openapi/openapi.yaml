@@ -48,13 +48,20 @@ paths:
           type: string
         style: form
       requestBody:
+        $ref: '#/components/requestBodies/inline_object'
         content:
-          text/plain:
+          application/json:
             examples:
               example-1:
-                value: string
+                value:
+                  document: string
             schema:
-              type: string
+              properties:
+                document:
+                  title: document
+                  type: string
+              title: inline_object
+              type: object
       responses:
         "204":
           description: No Content
@@ -175,6 +182,12 @@ paths:
       tags: []
       x-openapi-router-controller: textindexer.server.controllers.default_controller
 components:
+  requestBodies:
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
   schemas:
     Word:
       example:
@@ -266,6 +279,13 @@ components:
           title: docs
           type: array
       title: inline_response_200
+      type: object
+    inline_object:
+      properties:
+        document:
+          title: document
+          type: string
+      title: inline_object
       type: object
     inline_response_200_1:
       example:

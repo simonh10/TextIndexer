@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: indexer
-        image: "ghcr.io/simonh10/textindexer:mock"
+        image: "ghcr.io/simonh10/textindexer:latest"
         imagePullPolicy: Always
         resources:
           requests:
@@ -34,22 +34,10 @@ spec:
             memory: "128Mi"
             cpu: "250m"
         ports:
-        - containerPort: 4010
-        readinessProbe:
-          httpGet:
-            path: /indexer/v1/document
-            port: 4010
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /indexer/v1/document
-            port: 4010
-          initialDelaySeconds: 5
-          timeoutSeconds: 5       
+        - containerPort: 8080
         env:
         - name: PORT
-          value: "4010"
+          value: "8080"
 ---
 apiVersion: v1
 kind: Service
@@ -61,7 +49,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 4010
+  - port: 8080
   selector:
     app: indexer
 ---
@@ -79,7 +67,7 @@ spec:
           service:
             name: indexer
             port:
-              number: 4010
+              number: 8080
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

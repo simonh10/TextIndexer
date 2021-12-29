@@ -33,14 +33,6 @@ paths:
       responses:
         '204':
           description: No Content
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              type: string
-            examples:
-              example-1:
-                value: string
       parameters:
         - schema:
             type: string
@@ -54,6 +46,18 @@ paths:
             type: string
           in: query
           name: language
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  document: string
   '/indexer/v1/document/{doc_id}':
     parameters:
       - schema:

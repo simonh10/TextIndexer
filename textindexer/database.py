@@ -51,4 +51,4 @@ class DocsDatabase():
         docs_collection.insert_one(document)
 
     def _process_document(self, doc):
-        json.loads(dumps(doc))
+        return json.loads(dumps(doc))

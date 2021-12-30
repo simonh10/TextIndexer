@@ -5,7 +5,7 @@ metadata:
   labels:
     app: indexer
 spec:
-  replicas: 4
+  replicas: 1
   revisionHistoryLimit: 10
   minReadySeconds: 5
   selector:
@@ -39,63 +39,169 @@ spec:
         - name: PORT
           value: "8080"
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: indexer-processor
-  labels:
-    app: indexer-processor
+  name: processor1
 spec:
-  replicas: 4
-  revisionHistoryLimit: 10
-  minReadySeconds: 5
-  selector:
-    matchLabels:
-      app: indexer-processor
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 2
-  template:
-    metadata:
-      labels:
-        app: indexer-processor
-        tier: service
-    spec:
-      containers:
-      - name: indexer
-        image: "ghcr.io/simonh10/textindexer:processor-main"
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "125m"
-          limits:
-            memory: "128Mi"
-            cpu: "250m"
-        env:
-          - name: MONGO_INITDB_ROOT_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: secret-mongo-auth
-                key: username
-          - name: MONGO_INITDB_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: secret-mongo-auth
-                key: password
-          - name: RABBITMQ_DEFAULT_USER
-            valueFrom:
-              secretKeyRef:
-                name: secret-mq-auth
-                key: username
-          - name: RABBITMQ_DEFAULT_PASS
-            valueFrom:
-              secretKeyRef:
-                name: secret-mq-auth
-                key: password
+  hostname: processor
+  containers:
+  - name: indexer-processor
+    image: "ghcr.io/simonh10/textindexer:processor-main"
+    imagePullPolicy: Always
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "125m"
+      limits:
+        memory: "128Mi"
+        cpu: "250m"
+    env:
+      - name: MONGO_INITDB_ROOT_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: secret-mongo-auth
+            key: username
+      - name: MONGO_INITDB_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: secret-mongo-auth
+            key: password
+      - name: RABBITMQ_DEFAULT_USER
+        valueFrom:
+          secretKeyRef:
+            name: secret-mq-auth
+            key: username
+      - name: RABBITMQ_DEFAULT_PASS
+        valueFrom:
+          secretKeyRef:
+            name: secret-mq-auth
+            key: password
 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongo1
+  labels:
+    app: mongodb
+spec:
+  volumes:
+    - name: "mongo-pv"
+      persistentVolumeClaim: 
+        claimName: "mongo-pvc"
+  hostname: mongo
+  containers:
+  - name: mongo
+    image: mongo
+    ports:
+      - containerPort: 27071
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    volumeMounts:
+      - name: "mongo-pv"
+        mountPath: "/data/db"
+    env:
+      - name: MONGO_INITDB_ROOT_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: secret-mongo-auth
+            key: username
+      - name: MONGO_INITDB_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: secret-mongo-auth
+            key: password
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  hostname: busybox
+  containers:
+  - name: busybox
+    image: ubuntu
+    command:
+      - sleep
+      - "36000"
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mq1
+  labels:
+    app: rabbitmq
+spec:
+  volumes:
+  - name: "mq-data"
+    persistentVolumeClaim: 
+      claimName: "mq-pvc"
+  hostname: mq
+  containers:
+  - name: mq
+    image: rabbitmq
+    ports:
+      - containerPort: 5671
+      - containerPort: 5672
+      - containerPort: 15672
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    volumeMounts:
+      - name: "mq-data"
+        mountPath: "/var/lib/rabbitmq/mnesia"
+    env:
+      - name: RABBITMQ_DEFAULT_USER
+        valueFrom:
+          secretKeyRef:
+            name: secret-mq-auth
+            key: username
+      - name: RABBITMQ_DEFAULT_PASS
+        valueFrom:
+          secretKeyRef:
+            name: secret-mq-auth
+            key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+    tier: service
+spec:
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: mongodb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mq
+  labels:
+    app: mq
+    tier: service
+spec:
+  ports:
+  - name: tcp1
+    port: 5672
+  - name: tcp2
+    port: 5671
+  - name: mgt
+    port: 15672
+  selector:
+    app: rabbitmq
 ---
 apiVersion: v1
 kind: Service
@@ -139,45 +245,6 @@ spec:
     requests:
       storage: 3Gi
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mongo
-spec:
-  selector:
-    matchLabels:
-      app: mongo
-  template:
-    metadata:
-      labels:
-        app: mongo
-    spec:
-      volumes:
-        - name: "mongo-pv"
-          persistentVolumeClaim: 
-            claimName: "mongo-pvc"
-      containers:
-      - name: mongo
-        image: mongo
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        volumeMounts:
-          - name: "mongo-pv"
-            mountPath: "/data/db"
-        env:
-          - name: MONGO_INITDB_ROOT_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: secret-mongo-auth
-                key: username
-          - name: MONGO_INITDB_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: secret-mongo-auth
-                key: password
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -189,42 +256,3 @@ spec:
   resources:
     requests:
       storage: 3Gi
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mq
-spec:
-  selector:
-    matchLabels:
-      app: mq
-  template:
-    metadata:
-      labels:
-        app: mq
-    spec:
-      volumes:
-        - name: "mq-data"
-          persistentVolumeClaim: 
-            claimName: "mq-pvc"
-      containers:
-      - name: mq
-        image: rabbitmq
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        volumeMounts:
-          - name: "mq-data"
-            mountPath: "/var/lib/rabbitmq/mnesia"
-        env:
-          - name: RABBITMQ_DEFAULT_USER
-            valueFrom:
-              secretKeyRef:
-                name: secret-mq-auth
-                key: username
-          - name: RABBITMQ_DEFAULT_PASS
-            valueFrom:
-              secretKeyRef:
-                name: secret-mq-auth
-                key: password

@@ -13,7 +13,7 @@ class PostProcessor():
             username=mongo.get('username'),
             password=mongo.get('password'))
         self._mq = Connection(
-            hostname=mq.get('host'),
+            mq.get('host'),
             username=mq.get('username'),
             password=mq.get('password'))
 

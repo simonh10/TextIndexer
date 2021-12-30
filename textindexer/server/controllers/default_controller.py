@@ -92,3 +92,6 @@ def post_indexer_v1_document(document_record=None):  # noqa: E501
     if connexion.request.is_json:
         document_record = DocumentRecord.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
+
+
+from .default_controller_implementation import *

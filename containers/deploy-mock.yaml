@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: microsvc
-        image: "ghcr.io/simonh10/textindexer:mock"
+        image: "ghcr.io/simonh10/textindexer:mock-main"
         imagePullPolicy: Always
         resources:
           requests:

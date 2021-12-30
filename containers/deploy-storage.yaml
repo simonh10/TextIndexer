@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-test-pv-claim2
+spec:
+  storageClassName: openebs-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-test
+spec:
+  selector:
+    matchLabels:
+      app: mongo-test
+  template:
+    metadata:
+      labels:
+        app: mongo-test
+    spec:
+      volumes:
+        - name: "mongo-test-data-dir"
+          persistentVolumeClaim: 
+            claimName: "storage-test-pv-claim2"
+      containers:
+      - name: mongo-test
+        image: mongo
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: "mongo-test-data-dir"
+            mountPath: "/data/db"

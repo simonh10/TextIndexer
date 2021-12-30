@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
   title: TextIndexer-v1
   version: '1.0'
@@ -15,49 +15,50 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  docs:
-                    type: array
-                    items:
-                      type: string
+                $ref: '#/components/schemas/Documents'
               examples:
                 example-1:
                   value:
                     docs:
-                      - string+v1
+                      - id: skdfhaergezkrghkergkerg
+                        location: 'https://www.gutenberg.org/files/1342/1342-0.txt'
+                        encoding: utf-8
+                        language: english
+                        title: Pride and Prejudice
+                        author: Jane Austen
+                        status: pending
       operationId: get-indexer-v1-document
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: skip
+        - schema:
+            type: integer
+          in: query
+          name: limit
+      description: Get a list of document records
     post:
       summary: ''
       operationId: post-indexer-v1-document
       responses:
         '204':
           description: No Content
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: filename
-        - schema:
-            type: string
-          in: query
-          name: encoding
-        - schema:
-            type: string
-          in: query
-          name: language
+      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                document:
-                  type: string
+              $ref: '#/components/schemas/DocumentRecord'
             examples:
               example-1:
                 value:
-                  document: string
+                  location: 'https://www.gutenberg.org/files/1342/1342-0.txt'
+                  encoding: utf-8
+                  language: english
+                  title: Pride and Prejudice
+                  author: Jane Austen
+      description: Add a document record
   '/indexer/v1/document/{doc_id}':
     parameters:
       - schema:
@@ -74,21 +75,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/DocumentRecord'
               examples:
                 example-1:
                   value:
-                    id: string
-                    paragraphs:
-                      - index: 0
-                        sentences:
-                          - index: string
-                            text: string
-                            tokens:
-                              - string
-      operationId: get-indexer-v1-document-doc_id
+                    id: skdfhaergezkrghkergkerg
+                    location: 'https://www.gutenberg.org/files/1342/1342-0.txt'
+                    encoding: utf-8
+                    language: english
+                    title: Pride and Prejudice
+                    author: Jane Austen
+                    status: pending
+      operationId: get-indexer-v1-document-doc
       parameters: []
-  '/indexer/v1/document/{doc_id}/raw':
+      description: Get the document record
+  '/indexer/v1/document/{doc_id}/index':
     parameters:
       - schema:
           type: string
@@ -104,20 +105,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/DocumentIndex'
               examples:
                 example-1:
                   value:
-                    id: string
+                    id: sdlfnalscnawecwavvaSV
                     paragraphs:
-                      - index: 0
-                        sentences:
-                          - index: string
-                            text: string
-                            tokens:
-                              - string
-      operationId: get-indexer-v1-document-doc_id-raw
+                      - start: 0
+                        length: 250
+                        tokens:
+                          - token: the
+                            start: 0
+                    source: ZLVNDFLBKRBAVZVDHASKDVH
+      operationId: get-indexer-v1-document-doc_id-index
       parameters: []
+      description: Get the index record related to the document
+  '/indexer/v1/document/{doc_id}/full':
+    parameters:
+      - schema:
+          type: string
+        name: doc_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRecord'
+              examples:
+                example-1:
+                  value:
+                    id: skdfhaergezkrghkergkerg
+                    location: 'https://www.gutenberg.org/files/1342/1342-0.txt'
+                    encoding: utf-8
+                    language: english
+                    title: Pride and Prejudice
+                    author: Jane Austen
+                    text: All the text
+      operationId: get-indexer-v1-document-doc_id-full
+      parameters: []
+      description: Get the document with the full text enabled
   /indexer/v1/words:
     get:
       summary: Your GET endpoint
@@ -128,28 +160,22 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  count:
-                    type: integer
-                  word:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Word'
+                $ref: '#/components/schemas/Words'
               examples:
                 example-1:
                   value:
-                    count: 0
+                    count: 1
                     word:
-                      - id: string
-                        word: string
-                        encoding: string
-                        language: string
+                      - id: asdlcnaiecvnwaeclevvwe
+                        word: the
+                        encoding: utf-8
+                        language: english
                         references:
-                          - document: string
+                          - index: sadlfiawlenflwaec
+                            source: sadlfiawlenflwaec
                             paragraph: 0
                             start: 0
-                            end: 0
+                            end: 2
                             sentence: 0
                             word: 0
       operationId: get-indexer-v1-words
@@ -170,7 +196,7 @@ paths:
 components:
   schemas:
     Word:
-      title: Words
+      title: Word
       type: object
       properties:
         id:
@@ -186,19 +212,15 @@ components:
           items:
             type: object
             properties:
-              document:
+              index:
                 type: string
               paragraph:
                 type: integer
               start:
                 type: integer
-              end:
-                type: integer
-              sentence:
-                type: integer
-              word:
-                type: integer
-    Document:
+        reference_count:
+          type: integer
+    DocumentIndex:
       title: Document
       type: object
       properties:
@@ -209,18 +231,88 @@ components:
           items:
             type: object
             properties:
-              index:
+              start:
                 type: integer
-              sentences:
+              length:
+                type: integer
+              tokens:
                 type: array
                 items:
                   type: object
                   properties:
-                    index:
+                    token:
                       type: string
-                    text:
-                      type: string
-                    tokens:
-                      type: array
-                      items:
-                        type: string
+                    start:
+                      type: integer
+        source:
+          type: string
+          description: Source Document Record
+      x-examples:
+        example-1:
+          id: sdlfnalscnawecwavvaSV
+          paragraphs:
+            - start: 0
+              length: 250
+              tokens:
+                - token: the
+                  start: 0
+          source: ZLVNDFLBKRBAVZVDHASKDVH
+    DocumentRecord:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          id: skdfhaergezkrghkergkerg
+          location: 'https://www.gutenberg.org/files/1342/1342-0.txt'
+          encoding: utf-8
+          language: english
+          title: Pride and Prejudice
+          author: Jane Austen
+          text: All the text
+          status: indexed
+      properties:
+        location:
+          type: string
+          minLength: 1
+        encoding:
+          type: string
+          minLength: 1
+        language:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        author:
+          type: string
+          minLength: 1
+        id:
+          type: string
+        text:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - retrieving
+            - processing
+            - indexed
+      required:
+        - location
+        - title
+    Documents:
+      title: Documents
+      type: object
+      properties:
+        count:
+          type: integer
+        documents:
+          $ref: '#/components/schemas/DocumentRecord'
+    Words:
+      title: Words
+      type: object
+      properties:
+        count:
+          type: integer
+        words:
+          $ref: '#/components/schemas/Word'

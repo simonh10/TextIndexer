@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.0
 info:
   title: TextIndexer-v1
   version: "1.0"
@@ -7,7 +7,23 @@ servers:
 paths:
   /indexer/v1/document:
     get:
+      description: Get a list of document records
       operationId: get_indexer_v1_document
+      parameters:
+      - explode: true
+        in: query
+        name: skip
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
       responses:
         "200":
           content:
@@ -16,59 +32,44 @@ paths:
                 example-1:
                   value:
                     docs:
-                    - string+v1
+                    - id: skdfhaergezkrghkergkerg
+                      location: https://www.gutenberg.org/files/1342/1342-0.txt
+                      encoding: utf-8
+                      language: english
+                      title: Pride and Prejudice
+                      author: Jane Austen
+                      status: pending
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/Documents'
           description: OK
       summary: Your GET endpoint
       tags: []
       x-openapi-router-controller: textindexer.server.controllers.default_controller
     post:
+      description: Add a document record
       operationId: post_indexer_v1_document
-      parameters:
-      - explode: true
-        in: query
-        name: filename
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: encoding
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: language
-        required: false
-        schema:
-          type: string
-        style: form
+      parameters: []
       requestBody:
-        $ref: '#/components/requestBodies/inline_object'
         content:
           application/json:
             examples:
               example-1:
                 value:
-                  document: string
+                  location: https://www.gutenberg.org/files/1342/1342-0.txt
+                  encoding: utf-8
+                  language: english
+                  title: Pride and Prejudice
+                  author: Jane Austen
             schema:
-              properties:
-                document:
-                  title: document
-                  type: string
-              title: inline_object
-              type: object
+              $ref: '#/components/schemas/DocumentRecord'
       responses:
         "204":
           description: No Content
       x-openapi-router-controller: textindexer.server.controllers.default_controller
   /indexer/v1/document/{doc_id}:
     get:
-      operationId: get_indexer_v1_document_doc_id
+      description: Get the document record
+      operationId: get_indexer_v1_document_doc
       parameters:
       - explode: false
         in: path
@@ -84,23 +85,23 @@ paths:
               examples:
                 example-1:
                   value:
-                    id: string
-                    paragraphs:
-                    - index: 0
-                      sentences:
-                      - index: string
-                        text: string
-                        tokens:
-                        - string
+                    id: skdfhaergezkrghkergkerg
+                    location: https://www.gutenberg.org/files/1342/1342-0.txt
+                    encoding: utf-8
+                    language: english
+                    title: Pride and Prejudice
+                    author: Jane Austen
+                    status: pending
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/DocumentRecord'
           description: OK
       summary: Your GET endpoint
       tags: []
       x-openapi-router-controller: textindexer.server.controllers.default_controller
-  /indexer/v1/document/{doc_id}/raw:
+  /indexer/v1/document/{doc_id}/full:
     get:
-      operationId: get_indexer_v1_document_doc_id_raw
+      description: Get the document with the full text enabled
+      operationId: get_indexer_v1_document_doc_id_full
       parameters:
       - explode: false
         in: path
@@ -116,16 +117,48 @@ paths:
               examples:
                 example-1:
                   value:
-                    id: string
-                    paragraphs:
-                    - index: 0
-                      sentences:
-                      - index: string
-                        text: string
-                        tokens:
-                        - string
+                    id: skdfhaergezkrghkergkerg
+                    location: https://www.gutenberg.org/files/1342/1342-0.txt
+                    encoding: utf-8
+                    language: english
+                    title: Pride and Prejudice
+                    author: Jane Austen
+                    text: All the text
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/DocumentRecord'
+          description: OK
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: textindexer.server.controllers.default_controller
+  /indexer/v1/document/{doc_id}/index:
+    get:
+      description: Get the index record related to the document
+      operationId: get_indexer_v1_document_doc_id_index
+      parameters:
+      - explode: false
+        in: path
+        name: doc_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                example-1:
+                  value:
+                    id: sdlfnalscnawecwavvaSV
+                    paragraphs:
+                    - start: 0
+                      length: 250
+                      tokens:
+                      - token: the
+                        start: 0
+                    source: ZLVNDFLBKRBAVZVDHASKDVH
+              schema:
+                $ref: '#/components/schemas/DocumentIndex'
           description: OK
       summary: Your GET endpoint
       tags: []
@@ -162,51 +195,41 @@ paths:
               examples:
                 example-1:
                   value:
-                    count: 0
+                    count: 1
                     word:
-                    - id: string
-                      word: string
-                      encoding: string
-                      language: string
+                    - id: asdlcnaiecvnwaeclevvwe
+                      word: the
+                      encoding: utf-8
+                      language: english
                       references:
-                      - document: string
+                      - index: sadlfiawlenflwaec
+                        source: sadlfiawlenflwaec
                         paragraph: 0
                         start: 0
-                        end: 0
+                        end: 2
                         sentence: 0
                         word: 0
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/Words'
           description: OK
       summary: Your GET endpoint
       tags: []
       x-openapi-router-controller: textindexer.server.controllers.default_controller
 components:
-  requestBodies:
-    inline_object:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/inline_object'
   schemas:
     Word:
       example:
         references:
-        - sentence: 5
-          paragraph: 6
-          document: document
+        - paragraph: 6
           start: 1
-          end: 5
-          word: 2
-        - sentence: 5
-          paragraph: 6
-          document: document
+          index: index
+        - paragraph: 6
           start: 1
-          end: 5
-          word: 2
+          index: index
         language: language
         id: id
         encoding: encoding
+        reference_count: 5
         word: word
       properties:
         id:
@@ -226,127 +249,167 @@ components:
             $ref: '#/components/schemas/Word_references'
           title: references
           type: array
-      title: Words
+        reference_count:
+          title: reference_count
+          type: integer
+      title: Word
       type: object
-    Document:
+    DocumentIndex:
       example:
         id: id
+        source: source
         paragraphs:
-        - sentences:
-          - index: index
-            tokens:
-            - tokens
-            - tokens
-            text: text
-          - index: index
-            tokens:
-            - tokens
-            - tokens
-            text: text
-          index: 0
-        - sentences:
-          - index: index
-            tokens:
-            - tokens
-            - tokens
-            text: text
-          - index: index
-            tokens:
-            - tokens
-            - tokens
-            text: text
-          index: 0
+        - start: 0
+          length: 6
+          tokens:
+          - start: 1
+            token: token
+          - start: 1
+            token: token
+        - start: 0
+          length: 6
+          tokens:
+          - start: 1
+            token: token
+          - start: 1
+            token: token
       properties:
         id:
           title: id
           type: string
         paragraphs:
           items:
-            $ref: '#/components/schemas/Document_paragraphs'
+            $ref: '#/components/schemas/DocumentIndex_paragraphs'
           title: paragraphs
           type: array
+        source:
+          description: Source Document Record
+          title: source
+          type: string
       title: Document
       type: object
-    inline_response_200:
+      x-examples:
+        example-1:
+          id: sdlfnalscnawecwavvaSV
+          paragraphs:
+          - start: 0
+            length: 250
+            tokens:
+            - token: the
+              start: 0
+          source: ZLVNDFLBKRBAVZVDHASKDVH
+    DocumentRecord:
       example:
-        docs:
-        - docs
-        - docs
+        author: author
+        location: location
+        language: language
+        id: id
+        text: text
+        encoding: encoding
+        title: title
+        status: pending
       properties:
-        docs:
-          items:
-            type: string
-          title: docs
-          type: array
-      title: inline_response_200
-      type: object
-    inline_object:
-      properties:
-        document:
-          title: document
+        location:
+          minLength: 1
+          title: location
           type: string
-      title: inline_object
+        encoding:
+          minLength: 1
+          title: encoding
+          type: string
+        language:
+          minLength: 1
+          title: language
+          type: string
+        title:
+          minLength: 1
+          title: title
+          type: string
+        author:
+          minLength: 1
+          title: author
+          type: string
+        id:
+          title: id
+          type: string
+        text:
+          title: text
+          type: string
+        status:
+          enum:
+          - pending
+          - retrieving
+          - processing
+          - indexed
+          title: status
+          type: string
+      required:
+      - location
+      - title
+      title: DocumentRecord
       type: object
-    inline_response_200_1:
+      x-examples:
+        example-1:
+          id: skdfhaergezkrghkergkerg
+          location: https://www.gutenberg.org/files/1342/1342-0.txt
+          encoding: utf-8
+          language: english
+          title: Pride and Prejudice
+          author: Jane Austen
+          text: All the text
+          status: indexed
+    Documents:
+      example:
+        documents:
+          author: author
+          location: location
+          language: language
+          id: id
+          text: text
+          encoding: encoding
+          title: title
+          status: pending
+        count: 0
+      properties:
+        count:
+          title: count
+          type: integer
+        documents:
+          $ref: '#/components/schemas/DocumentRecord'
+      title: Documents
+      type: object
+    Words:
       example:
         count: 0
-        word:
-        - references:
-          - sentence: 5
-            paragraph: 6
-            document: document
+        words:
+          references:
+          - paragraph: 6
             start: 1
-            end: 5
-            word: 2
-          - sentence: 5
-            paragraph: 6
-            document: document
+            index: index
+          - paragraph: 6
             start: 1
-            end: 5
-            word: 2
+            index: index
           language: language
           id: id
           encoding: encoding
-          word: word
-        - references:
-          - sentence: 5
-            paragraph: 6
-            document: document
-            start: 1
-            end: 5
-            word: 2
-          - sentence: 5
-            paragraph: 6
-            document: document
-            start: 1
-            end: 5
-            word: 2
-          language: language
-          id: id
-          encoding: encoding
+          reference_count: 5
           word: word
       properties:
         count:
           title: count
           type: integer
-        word:
-          items:
-            $ref: '#/components/schemas/Word'
-          title: word
-          type: array
-      title: inline_response_200_1
+        words:
+          $ref: '#/components/schemas/Word'
+      title: Words
       type: object
     Word_references:
       example:
-        sentence: 5
         paragraph: 6
-        document: document
         start: 1
-        end: 5
-        word: 2
+        index: index
       properties:
-        document:
-          title: document
+        index:
+          title: index
           type: string
         paragraph:
           title: paragraph
@@ -354,60 +417,41 @@ components:
         start:
           title: start
           type: integer
-        end:
-          title: end
-          type: integer
-        sentence:
-          title: sentence
-          type: integer
-        word:
-          title: word
-          type: integer
       title: Word_references
       type: object
-    Document_sentences:
+    DocumentIndex_tokens:
       example:
-        index: index
-        tokens:
-        - tokens
-        - tokens
-        text: text
+        start: 1
+        token: token
       properties:
-        index:
-          title: index
+        token:
+          title: token
           type: string
-        text:
-          title: text
-          type: string
+        start:
+          title: start
+          type: integer
+      title: DocumentIndex_tokens
+      type: object
+    DocumentIndex_paragraphs:
+      example:
+        start: 0
+        length: 6
+        tokens:
+        - start: 1
+          token: token
+        - start: 1
+          token: token
+      properties:
+        start:
+          title: start
+          type: integer
+        length:
+          title: length
+          type: integer
         tokens:
           items:
-            type: string
+            $ref: '#/components/schemas/DocumentIndex_tokens'
           title: tokens
           type: array
-      title: Document_sentences
-      type: object
-    Document_paragraphs:
-      example:
-        sentences:
-        - index: index
-          tokens:
-          - tokens
-          - tokens
-          text: text
-        - index: index
-          tokens:
-          - tokens
-          - tokens
-          text: text
-        index: 0
-      properties:
-        index:
-          title: index
-          type: integer
-        sentences:
-          items:
-            $ref: '#/components/schemas/Document_sentences'
-          title: sentences
-          type: array
-      title: Document_paragraphs
+      title: DocumentIndex_paragraphs
       type: object

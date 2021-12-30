@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: indexer
-        image: "ghcr.io/simonh10/textindexer:latest"
+        image: "ghcr.io/simonh10/textindexer:main"
         imagePullPolicy: Always
         resources:
           requests:
@@ -72,29 +72,14 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: task-pv-claim
+  name: mongo-pvc
 spec:
-  storageClassName: manual
+  storageClassName: openebs-hostpath
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 3Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: task-pv-volume
-  labels:
-    type: local
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -110,9 +95,9 @@ spec:
         app: mongo
     spec:
       volumes:
-        - name: "mongo-data-dir"
+        - name: "mongo-pv"
           persistentVolumeClaim: 
-            claimName: "task-pv-claim"
+            claimName: "mongo-pvc"
       containers:
       - name: mongo
         image: mongo
@@ -121,5 +106,45 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         volumeMounts:
-          - name: "mongo-data-dir"
+          - name: "mongo-pv"
             mountPath: "/data/db"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mq-pvc
+spec:
+  storageClassName: openebs-hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mq
+spec:
+  selector:
+    matchLabels:
+      app: mq
+  template:
+    metadata:
+      labels:
+        app: mq
+    spec:
+      volumes:
+        - name: "mq-data"
+          persistentVolumeClaim: 
+            claimName: "mq-pvc"
+      containers:
+      - name: mq
+        image: rabbitmq
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: "mq-data"
+            mountPath: "/var/lib/rabbitmq/mnesia"

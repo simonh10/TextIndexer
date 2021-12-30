@@ -15,46 +15,31 @@ class WordReferences(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, document=None, paragraph=None, start=None, end=None, sentence=None, word=None):  # noqa: E501
+    def __init__(self, index=None, paragraph=None, start=None):  # noqa: E501
         """WordReferences - a model defined in OpenAPI
 
-        :param document: The document of this WordReferences.  # noqa: E501
-        :type document: str
+        :param index: The index of this WordReferences.  # noqa: E501
+        :type index: str
         :param paragraph: The paragraph of this WordReferences.  # noqa: E501
         :type paragraph: int
         :param start: The start of this WordReferences.  # noqa: E501
         :type start: int
-        :param end: The end of this WordReferences.  # noqa: E501
-        :type end: int
-        :param sentence: The sentence of this WordReferences.  # noqa: E501
-        :type sentence: int
-        :param word: The word of this WordReferences.  # noqa: E501
-        :type word: int
         """
         self.openapi_types = {
-            'document': str,
+            'index': str,
             'paragraph': int,
-            'start': int,
-            'end': int,
-            'sentence': int,
-            'word': int
+            'start': int
         }
 
         self.attribute_map = {
-            'document': 'document',
+            'index': 'index',
             'paragraph': 'paragraph',
-            'start': 'start',
-            'end': 'end',
-            'sentence': 'sentence',
-            'word': 'word'
+            'start': 'start'
         }
 
-        self._document = document
+        self._index = index
         self._paragraph = paragraph
         self._start = start
-        self._end = end
-        self._sentence = sentence
-        self._word = word
 
     @classmethod
     def from_dict(cls, dikt) -> 'WordReferences':
@@ -68,25 +53,25 @@ class WordReferences(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def document(self):
-        """Gets the document of this WordReferences.
+    def index(self):
+        """Gets the index of this WordReferences.
 
 
-        :return: The document of this WordReferences.
+        :return: The index of this WordReferences.
         :rtype: str
         """
-        return self._document
+        return self._index
 
-    @document.setter
-    def document(self, document):
-        """Sets the document of this WordReferences.
+    @index.setter
+    def index(self, index):
+        """Sets the index of this WordReferences.
 
 
-        :param document: The document of this WordReferences.
-        :type document: str
+        :param index: The index of this WordReferences.
+        :type index: str
         """
 
-        self._document = document
+        self._index = index
 
     @property
     def paragraph(self):
@@ -129,66 +114,3 @@ class WordReferences(Model):
         """
 
         self._start = start
-
-    @property
-    def end(self):
-        """Gets the end of this WordReferences.
-
-
-        :return: The end of this WordReferences.
-        :rtype: int
-        """
-        return self._end
-
-    @end.setter
-    def end(self, end):
-        """Sets the end of this WordReferences.
-
-
-        :param end: The end of this WordReferences.
-        :type end: int
-        """
-
-        self._end = end
-
-    @property
-    def sentence(self):
-        """Gets the sentence of this WordReferences.
-
-
-        :return: The sentence of this WordReferences.
-        :rtype: int
-        """
-        return self._sentence
-
-    @sentence.setter
-    def sentence(self, sentence):
-        """Sets the sentence of this WordReferences.
-
-
-        :param sentence: The sentence of this WordReferences.
-        :type sentence: int
-        """
-
-        self._sentence = sentence
-
-    @property
-    def word(self):
-        """Gets the word of this WordReferences.
-
-
-        :return: The word of this WordReferences.
-        :rtype: int
-        """
-        return self._word
-
-    @word.setter
-    def word(self, word):
-        """Sets the word of this WordReferences.
-
-
-        :param word: The word of this WordReferences.
-        :type word: int
-        """
-
-        self._word = word

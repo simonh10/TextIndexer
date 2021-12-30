@@ -17,7 +17,7 @@ class Word(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, word=None, encoding=None, language=None, references=None):  # noqa: E501
+    def __init__(self, id=None, word=None, encoding=None, language=None, references=None, reference_count=None):  # noqa: E501
         """Word - a model defined in OpenAPI
 
         :param id: The id of this Word.  # noqa: E501
@@ -30,13 +30,16 @@ class Word(Model):
         :type language: str
         :param references: The references of this Word.  # noqa: E501
         :type references: List[WordReferences]
+        :param reference_count: The reference_count of this Word.  # noqa: E501
+        :type reference_count: int
         """
         self.openapi_types = {
             'id': str,
             'word': str,
             'encoding': str,
             'language': str,
-            'references': List[WordReferences]
+            'references': List[WordReferences],
+            'reference_count': int
         }
 
         self.attribute_map = {
@@ -44,7 +47,8 @@ class Word(Model):
             'word': 'word',
             'encoding': 'encoding',
             'language': 'language',
-            'references': 'references'
+            'references': 'references',
+            'reference_count': 'reference_count'
         }
 
         self._id = id
@@ -52,6 +56,7 @@ class Word(Model):
         self._encoding = encoding
         self._language = language
         self._references = references
+        self._reference_count = reference_count
 
     @classmethod
     def from_dict(cls, dikt) -> 'Word':
@@ -168,3 +173,24 @@ class Word(Model):
         """
 
         self._references = references
+
+    @property
+    def reference_count(self):
+        """Gets the reference_count of this Word.
+
+
+        :return: The reference_count of this Word.
+        :rtype: int
+        """
+        return self._reference_count
+
+    @reference_count.setter
+    def reference_count(self, reference_count):
+        """Sets the reference_count of this Word.
+
+
+        :param reference_count: The reference_count of this Word.
+        :type reference_count: int
+        """
+
+        self._reference_count = reference_count

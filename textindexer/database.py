@@ -26,9 +26,10 @@ class DocsDatabase():
             password=mongo_config.get('password'))[self._DATABASE]
     
     def get_documents(self, skip=0, limit=10):
+        query = {}
         docs_collection = self._db[self._DOCUMENTS_COLLECTION]
-        docs = docs_collection.find({})
-        count = docs.count()
+        docs = docs_collection.find(query)
+        count = docs_collection.count_documents(query)
         docs.skip(skip).limit(limit)
         ret_docs = []
         for i in docs:

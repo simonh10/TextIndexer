@@ -39,6 +39,64 @@ spec:
         - name: PORT
           value: "8080"
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexer-processor
+  labels:
+    app: indexer-processor
+spec:
+  replicas: 4
+  revisionHistoryLimit: 10
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: indexer-processor
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        app: indexer-processor
+        tier: service
+    spec:
+      containers:
+      - name: indexer
+        image: "ghcr.io/simonh10/textindexer:processor-main"
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secret-mongo-auth
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-mongo-auth
+                key: password
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: secret-mq-auth
+                key: username
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: secret-mq-auth
+                key: password
+
+---
 apiVersion: v1
 kind: Service
 metadata:

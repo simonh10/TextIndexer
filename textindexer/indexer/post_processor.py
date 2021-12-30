@@ -6,12 +6,8 @@ from amqpstorm import Connection
 class PostProcessor():
 
     def __init__(self, mongo={}, mq={}):
-        self._mongo_username = mongo.get('username')
-        self._mongo_username = mongo.get('password')
-        self._mongo_host = mongo.get('host')
-        self._mq_username = mq.get('username')
-        self._mq_username = mq.get('password')
-        self._mq_host = mq.get('host')
+        logging.warning("Mongo:{}".format(mongo))
+        logging.warning("MQ:{}".format(mq))
         self._db = MongoClient(
             mongo.get('host'),
             username=mongo.get('username'),

@@ -1,6 +1,8 @@
 import logging
 from pymongo import MongoClient
+from bson.json_util import dumps
 import os
+import json
 
 
 class DocsDatabase():
@@ -39,7 +41,7 @@ class DocsDatabase():
         docs.skip(skip).limit(limit)
         ret_docs = []
         for i in docs:
-            ret_docs.append(i)
+            ret_docs.append(self._process_document(i))
         return {
             'count': count,
             'documents': ret_docs}
@@ -47,3 +49,6 @@ class DocsDatabase():
     def add_document(self, document):
         docs_collection = self._db[self._DOCUMENTS_COLLECTION]
         docs_collection.insert_one(document)
+
+    def _process_document(self, doc):
+        json.loads(dumps(doc))

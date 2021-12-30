@@ -1,3 +1,4 @@
+import logging
 from pymongo import MongoClient
 import os
 
@@ -20,6 +21,7 @@ class DocsDatabase():
             'password': os.environ.get(
                 'MONGO_INITDB_ROOT_PASSWORD',
                 mongo.get('password','mongo'))}
+        logging.warning("Mongo Init:{}".format(mongo_config))
         self._db = MongoClient(
             mongo_config.get('host'),
             username=mongo_config.get('username'),

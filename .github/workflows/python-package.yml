@@ -46,3 +46,9 @@ jobs:
         push: true
         tags: ghcr.io/simonh10/textindexer:${{github.ref_name}}
         file: containers/Dockerfile
+    - name: build_production_processor
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ghcr.io/simonh10/textindexer:processor-${{github.ref_name}}
+        file: containers/Dockerfile.processor

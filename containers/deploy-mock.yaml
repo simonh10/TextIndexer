@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: microsvc
+  name: indexer
   labels:
-    app: microsvc
+    app: indexer
 spec:
   replicas: 4
   revisionHistoryLimit: 10
   minReadySeconds: 5
   selector:
     matchLabels:
-      app: microsvc
+      app: indexer
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,11 +19,11 @@ spec:
   template:
     metadata:
       labels:
-        app: microsvc
+        app: indexer
         tier: service
     spec:
       containers:
-      - name: microsvc
+      - name: indexer
         image: "ghcr.io/simonh10/textindexer:mock-main"
         imagePullPolicy: Always
         resources:
@@ -54,16 +54,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: microsvc
+  name: indexer
   labels:
-    app: microsvc
+    app: indexer
     tier: service
 spec:
   type: LoadBalancer
   ports:
   - port: 4010
   selector:
-    app: microsvc
+    app: indexer
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -77,6 +77,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: microsvc
+            name: indexer
             port:
               number: 4010

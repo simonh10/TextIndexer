@@ -108,6 +108,17 @@ spec:
         volumeMounts:
           - name: "mongo-pv"
             mountPath: "/data/db"
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secret-mongo-auth
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-mongo-auth
+                key: password
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -148,3 +159,14 @@ spec:
         volumeMounts:
           - name: "mq-data"
             mountPath: "/var/lib/rabbitmq/mnesia"
+        env:
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: secret-mq-auth
+                key: username
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: secret-mq-auth
+                key: password

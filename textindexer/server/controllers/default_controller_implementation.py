@@ -3,7 +3,7 @@ from textindexer.server.models.document_record import DocumentRecord  # noqa: E5
 import connexion
 
 
-def get_indexer_v1_document(skip=None, limit=None):  # noqa: E501
+def get_indexer_v1_document(skip=None, limit=None, status=None):  # noqa: E501
     """Your GET endpoint
 
     Get a list of document records # noqa: E501
@@ -16,7 +16,7 @@ def get_indexer_v1_document(skip=None, limit=None):  # noqa: E501
     :rtype: Documents
     """
     docs_db = DocsDatabase()
-    return docs_db.get_documents(skip=skip, limit=limit)
+    return docs_db.get_documents(skip=skip, limit=limit, status=status)
 
 
 def post_indexer_v1_document(document_record=None):
@@ -33,5 +33,5 @@ def post_indexer_v1_document(document_record=None):
         document_record = DocumentRecord.from_dict(connexion.request.get_json())  # noqa: E501
         docs_db = DocsDatabase()
         docs_db.add_document(document_record.to_dict())
-
     return None
+

@@ -29,12 +29,14 @@ class DocsDatabase():
             username=mongo_config.get('username'),
             password=mongo_config.get('password'))[self._DATABASE]
     
-    def get_documents(self, skip=0, limit=10):
+    def get_documents(self, skip=0, limit=10, status=None):
         if not isinstance(skip, int) :
             skip = 0
         if not isinstance(limit, int):
             limit = 100
         query = {}
+        if status:
+            query['status'] = status
         docs_collection = self._db[self._DOCUMENTS_COLLECTION]
         docs = docs_collection.find(query)
         count = docs_collection.count_documents(query)

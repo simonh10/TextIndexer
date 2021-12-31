@@ -8,7 +8,7 @@ from textindexer.server.models.words import Words  # noqa: E501
 from textindexer.server import util
 
 
-def get_indexer_v1_document(skip=None, limit=None):  # noqa: E501
+def get_indexer_v1_document(skip=None, limit=None, status=None):  # noqa: E501
     """Your GET endpoint
 
     Get a list of document records # noqa: E501
@@ -17,6 +17,8 @@ def get_indexer_v1_document(skip=None, limit=None):  # noqa: E501
     :type skip: int
     :param limit: 
     :type limit: int
+    :param status: 
+    :type status: str
 
     :rtype: Documents
     """

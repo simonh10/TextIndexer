@@ -37,6 +37,10 @@ paths:
             type: integer
           in: query
           name: limit
+        - schema:
+            type: string
+          in: query
+          name: status
       description: Get a list of document records
     post:
       summary: ''

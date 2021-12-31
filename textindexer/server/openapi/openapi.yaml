@@ -24,6 +24,13 @@ paths:
         schema:
           type: integer
         style: form
+      - explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          type: string
+        style: form
       responses:
         "200":
           content:
